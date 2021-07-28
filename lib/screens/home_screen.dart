@@ -1,6 +1,10 @@
 import 'package:agrobank_test/bloc/bottom_navigation/bottomnavigation_bloc.dart';
+import 'package:agrobank_test/bloc/tasks/task_bloc.dart';
+import 'package:agrobank_test/screens/edit_task.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'add_task.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -42,13 +46,50 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Scaffold buildHomepage(String title, Color color, int currentIndex) {
     return Scaffold(
-      body: Container(
-        color: color,
-        child: Center(
-          child: Text(title),
-        ),
+      body: BlocBuilder<TaskBloc, TaskState>(
+        builder: (context, state) {
+          if (state is TaskInitial) {
+            return Container(
+              color: Colors.green,
+            );
+          }
+          if (state is YourTasksState) {
+            return ListView.builder(
+              itemBuilder: (BuildContext context, index) {
+                final task = state.tasks[index];
+                return ListTile(
+                  title: Text(task.title),
+                  subtitle: Text(task.date.toString()),
+                  trailing: Text(task.status),
+                );
+              },
+              itemCount: state.tasks.length,
+            );
+          }
+          if (state is TasksLoading) {
+            return CircularProgressIndicator();
+          } else {
+            return Container(
+              color: Colors.red,
+            );
+          }
+        },
       ),
       appBar: AppBar(
+        actions: [
+          IconButton(onPressed: () {}, icon: Icon(Icons.settings)),
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => AddTaskScreen(
+                      newTask: true,
+                    ),
+                  ),
+                );
+              },
+              icon: Icon(Icons.add)),
+        ],
         title: Text('Задачи'),
       ),
       bottomNavigationBar: BottomNavigationBar(
