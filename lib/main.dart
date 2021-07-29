@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter<Task>(TaskAdapter());
   await Hive.openBox<Task>('Task');
@@ -22,6 +21,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<TaskBloc>(context).add(TaskInitialEvent());
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Bloc pattern demo for AgroBank',

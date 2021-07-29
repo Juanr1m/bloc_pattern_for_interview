@@ -3,6 +3,8 @@ import 'package:agrobank_test/bloc/tasks/task_bloc.dart';
 import 'package:agrobank_test/screens/edit_task.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 import 'add_task.dart';
 
@@ -15,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   BottomnavigationBloc? _navbarBloc;
+  final DateFormat _dateFormatter = DateFormat('MMM dd');
 
   @override
   void initState() {
@@ -33,34 +36,69 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocBuilder(
       bloc: _navbarBloc,
       builder: (BuildContext context, BottomnavigationState state) {
-        if (state is ShowAll)
-          return buildHomepage(state.title, Colors.blue, state.itemIndex);
-        if (state is ShowTasksInProgress)
-          return buildHomepage(state.title, Colors.green, state.itemIndex);
-        if (state is ShowDoneTasks)
-          return buildHomepage(state.title, Colors.red, state.itemIndex);
+        if (state is ShowAll) return buildHomepage(state.itemIndex);
+        if (state is ShowTasksInProgress) return buildHomepage(state.itemIndex);
+        if (state is ShowDoneTasks) return buildHomepage(state.itemIndex);
         return CircularProgressIndicator();
       },
     );
   }
 
-  Scaffold buildHomepage(String title, Color color, int currentIndex) {
+  Scaffold buildHomepage(int currentIndex) {
     return Scaffold(
       body: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
           if (state is TaskInitial) {
-            return Container(
-              color: Colors.green,
+            return Center(
+              child: CircularProgressIndicator(),
             );
           }
           if (state is YourTasksState) {
             return ListView.builder(
               itemBuilder: (BuildContext context, index) {
                 final task = state.tasks[index];
-                return ListTile(
-                  title: Text(task.title),
-                  subtitle: Text(task.date.toString()),
-                  trailing: Text(task.status),
+                return Slidable(
+                  actionPane: SlidableDrawerActionPane(),
+                  secondaryActions: <Widget>[
+                    IconSlideAction(
+                      caption: 'Редактировать',
+                      color: Colors.black45,
+                      icon: Icons.edit,
+                      onTap: () => {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (BuildContext context) {
+                          return EditTaskScreen(
+                            task: task,
+                            index: index,
+                          );
+                        }))
+                      },
+                    ),
+                    IconSlideAction(
+                      caption: 'Удалить',
+                      color: Colors.red,
+                      icon: Icons.delete,
+                      onTap: () {
+                        BlocProvider.of<TaskBloc>(context)
+                            .add(TaskDeleteEvent(index: index));
+                      },
+                    ),
+                  ],
+                  child: ListTile(
+                    onTap: () => {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return EditTaskScreen(
+                          task: task,
+                          index: index,
+                        );
+                      }))
+                    },
+                    title: Text(task.title),
+                    subtitle: Text(
+                        _dateFormatter.format(task.date) + '  ' + task.status),
+                    trailing: Icon(Icons.more),
+                  ),
                 );
               },
               itemCount: state.tasks.length,
@@ -77,27 +115,41 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       appBar: AppBar(
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.settings)),
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => AddTaskScreen(
-                      newTask: true,
-                    ),
-                  ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DropdownButton(
+              icon: Icon(Icons.settings, color: Colors.white),
+              items: [
+                'В порядке возрастания сроков',
+                'В порядке убывания сроков',
+              ].map((String value) {
+                return DropdownMenuItem(
+                  value: value,
+                  child: Text(value),
                 );
-              },
-              icon: Icon(Icons.add)),
+              }).toList(),
+              onChanged: (_) {},
+            ),
+          )
         ],
         title: Text('Задачи'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (BuildContext context) => AddTaskScreen(),
+            ),
+          );
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (index) {
-          if (index == 0) _navbarBloc!.emit(ShowAll());
-          if (index == 1) _navbarBloc!.emit(ShowTasksInProgress());
-          if (index == 2) _navbarBloc!.emit(ShowDoneTasks());
+          if (index == 0) _navbarBloc!.add(NavbarItems.All);
+          if (index == 1) _navbarBloc!.add(NavbarItems.Progress);
+          if (index == 2) _navbarBloc!.add(NavbarItems.Done);
         },
         items: const [
           BottomNavigationBarItem(

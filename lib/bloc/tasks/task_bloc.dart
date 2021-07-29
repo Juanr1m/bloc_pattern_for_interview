@@ -3,7 +3,7 @@ import 'package:agrobank_test/repositories/db.dart';
 import 'package:equatable/equatable.dart';
 
 import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
+
 import 'package:agrobank_test/repositories/models/task.dart';
 
 part 'task_event.dart';
