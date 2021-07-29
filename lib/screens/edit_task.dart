@@ -15,18 +15,25 @@ class EditTaskScreen extends StatefulWidget {
 
 class _EditTaskScreenState extends State<EditTaskScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  DateTime _date = DateTime.now();
+  String _title = '';
+  String _status = '';
   List<String> _statusList = ['В прогрессе', 'Выполнено'];
+  TextEditingController _dateController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _dateController.text = _date.toString();
+    _title = widget.task!.title;
+    _status = widget.task!.status;
+  }
 
   @override
   Widget build(BuildContext context) {
-    String _title = widget.task!.title;
-    DateTime _date = widget.task!.date;
-    String _status = widget.task!.status;
-
     TextEditingController _titleController =
         TextEditingController(text: _title);
-    TextEditingController _dateController =
-        TextEditingController(text: _date.toString());
 
     _handleDatePicker() async {
       final DateTime? date = await showDatePicker(
@@ -38,7 +45,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         setState(() {
           _date = date;
         });
-        _dateController.text = _date.toString();
+        _dateController.text = date.toString();
       }
     }
 
@@ -49,22 +56,24 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         ),
       ),
       floatingActionButton: Padding(
-          padding: EdgeInsets.only(left: 10, bottom: 10),
-          child: FloatingActionButton.extended(
-            backgroundColor: Theme.of(context).primaryColor,
-            icon: Icon(Icons.add),
-            label: Text('Изменить'),
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                BlocProvider.of<TaskBloc>(context).add(TaskEditEvent(
-                    title: _title,
-                    status: _status,
-                    date: DateTime.parse(_dateController.text),
-                    index: widget.index));
-                Navigator.pop(context);
-              }
-            },
-          )),
+        padding: EdgeInsets.only(left: 10, bottom: 10),
+        child: FloatingActionButton.extended(
+          backgroundColor: Theme.of(context).primaryColor,
+          icon: Icon(Icons.add),
+          label: Text('Изменить'),
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              _formKey.currentState!.save();
+              BlocProvider.of<TaskBloc>(context).add(TaskEditEvent(
+                  title: _title,
+                  status: _status,
+                  date: DateTime.parse(_dateController.text),
+                  index: widget.index));
+              Navigator.pop(context);
+            }
+          },
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 15),
         child: Form(
