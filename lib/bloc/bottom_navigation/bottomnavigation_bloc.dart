@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:agrobank_test/repositories/models/task.dart';
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
-part 'bottomnavigation_state.dart';
+import 'bottomnavigation_event.dart';
 
-enum NavbarItems { All, Progress, Done }
+part 'bottomnavigation_state.dart';
 
 class BottomnavigationBloc extends Bloc<NavbarItems, BottomnavigationState> {
   BottomnavigationBloc() : super(ShowAll());

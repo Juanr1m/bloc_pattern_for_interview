@@ -19,10 +19,10 @@ class EditTasksState extends TaskState {
 }
 
 //  your notes
-class YourTasksState extends TaskState {
+class AllTasksState extends TaskState {
   final List<Task> tasks; // get all notes
 
-  YourTasksState({required this.tasks});
+  AllTasksState({required this.tasks});
 }
 
 // new note

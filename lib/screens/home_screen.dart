@@ -1,4 +1,5 @@
 import 'package:agrobank_test/bloc/bottom_navigation/bottomnavigation_bloc.dart';
+import 'package:agrobank_test/bloc/bottom_navigation/bottomnavigation_event.dart';
 import 'package:agrobank_test/bloc/tasks/task_bloc.dart';
 import 'package:agrobank_test/screens/edit_task.dart';
 import 'package:flutter/material.dart';
@@ -53,17 +54,44 @@ class _HomeScreenState extends State<HomeScreen> {
               child: CircularProgressIndicator(),
             );
           }
-          if (state is YourTasksState) {
-            return ListView.builder(
-              itemBuilder: (BuildContext context, index) {
-                final task = state.tasks[index];
-                return Slidable(
-                  actionPane: SlidableDrawerActionPane(),
-                  secondaryActions: <Widget>[
-                    IconSlideAction(
-                      caption: 'Редактировать',
-                      color: Colors.black45,
-                      icon: Icons.edit,
+          if (state is AllTasksState) {
+            if (state.tasks.isEmpty) {
+              return Center(
+                child: Text('Нет информации'),
+              );
+            }
+            if (_navbarBloc!.state is ShowAll) {
+              return ListView.builder(
+                itemBuilder: (BuildContext context, index) {
+                  final task = state.tasks[index];
+                  return Slidable(
+                    actionPane: SlidableDrawerActionPane(),
+                    secondaryActions: <Widget>[
+                      IconSlideAction(
+                        caption: 'Редактировать',
+                        color: Colors.black45,
+                        icon: Icons.edit,
+                        onTap: () => {
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (BuildContext context) {
+                            return EditTaskScreen(
+                              task: task,
+                              index: index,
+                            );
+                          }))
+                        },
+                      ),
+                      IconSlideAction(
+                        caption: 'Удалить',
+                        color: Colors.red,
+                        icon: Icons.delete,
+                        onTap: () {
+                          BlocProvider.of<TaskBloc>(context)
+                              .add(TaskDeleteEvent(index: index));
+                        },
+                      ),
+                    ],
+                    child: ListTile(
                       onTap: () => {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (BuildContext context) {
@@ -73,36 +101,124 @@ class _HomeScreenState extends State<HomeScreen> {
                           );
                         }))
                       },
+                      title: Text(task.title),
+                      subtitle: Text(_dateFormatter.format(task.date) +
+                          '  ' +
+                          task.status),
+                      trailing: Icon(Icons.more),
                     ),
-                    IconSlideAction(
-                      caption: 'Удалить',
-                      color: Colors.red,
-                      icon: Icons.delete,
-                      onTap: () {
-                        BlocProvider.of<TaskBloc>(context)
-                            .add(TaskDeleteEvent(index: index));
+                  );
+                },
+                itemCount: state.tasks.length,
+              );
+            }
+
+            if (_navbarBloc!.state is ShowTasksInProgress) {
+              return ListView.builder(
+                itemBuilder: (BuildContext context, index) {
+                  final task = state.tasks[index];
+                  return Slidable(
+                    actionPane: SlidableDrawerActionPane(),
+                    secondaryActions: <Widget>[
+                      IconSlideAction(
+                        caption: 'Редактировать',
+                        color: Colors.black45,
+                        icon: Icons.edit,
+                        onTap: () => {
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (BuildContext context) {
+                            return EditTaskScreen(
+                              task: task,
+                              index: index,
+                            );
+                          }))
+                        },
+                      ),
+                      IconSlideAction(
+                        caption: 'Удалить',
+                        color: Colors.red,
+                        icon: Icons.delete,
+                        onTap: () {
+                          BlocProvider.of<TaskBloc>(context)
+                              .add(TaskDeleteEvent(index: index));
+                        },
+                      ),
+                    ],
+                    child: ListTile(
+                      tileColor: Colors.red,
+                      onTap: () => {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (BuildContext context) {
+                          return EditTaskScreen(
+                            task: task,
+                            index: index,
+                          );
+                        }))
                       },
+                      title: Text(task.title),
+                      subtitle: Text(_dateFormatter.format(task.date) +
+                          '  ' +
+                          task.status),
+                      trailing: Icon(Icons.more),
                     ),
-                  ],
-                  child: ListTile(
-                    onTap: () => {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (BuildContext context) {
-                        return EditTaskScreen(
-                          task: task,
-                          index: index,
-                        );
-                      }))
-                    },
-                    title: Text(task.title),
-                    subtitle: Text(
-                        _dateFormatter.format(task.date) + '  ' + task.status),
-                    trailing: Icon(Icons.more),
-                  ),
-                );
-              },
-              itemCount: state.tasks.length,
-            );
+                  );
+                },
+                itemCount: state.tasks.length,
+              );
+            }
+            if (_navbarBloc!.state is ShowDoneTasks) {
+              return ListView.builder(
+                itemBuilder: (BuildContext context, index) {
+                  final task = state.tasks[index];
+                  return Slidable(
+                    actionPane: SlidableDrawerActionPane(),
+                    secondaryActions: <Widget>[
+                      IconSlideAction(
+                        caption: 'Редактировать',
+                        color: Colors.black45,
+                        icon: Icons.edit,
+                        onTap: () => {
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (BuildContext context) {
+                            return EditTaskScreen(
+                              task: task,
+                              index: index,
+                            );
+                          }))
+                        },
+                      ),
+                      IconSlideAction(
+                        caption: 'Удалить',
+                        color: Colors.red,
+                        icon: Icons.delete,
+                        onTap: () {
+                          BlocProvider.of<TaskBloc>(context)
+                              .add(TaskDeleteEvent(index: index));
+                        },
+                      ),
+                    ],
+                    child: ListTile(
+                      tileColor: Colors.green,
+                      onTap: () => {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (BuildContext context) {
+                          return EditTaskScreen(
+                            task: task,
+                            index: index,
+                          );
+                        }))
+                      },
+                      title: Text(task.title),
+                      subtitle: Text(_dateFormatter.format(task.date) +
+                          '  ' +
+                          task.status),
+                      trailing: Icon(Icons.more),
+                    ),
+                  );
+                },
+                itemCount: state.tasks.length,
+              );
+            }
           }
           if (state is TasksLoading) {
             return CircularProgressIndicator();

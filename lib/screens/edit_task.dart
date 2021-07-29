@@ -64,46 +64,50 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               }
             },
           )),
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            TextFormField(
-              controller: _titleController,
-              validator: (input) =>
-                  input!.trim().isEmpty ? 'Введите название' : null,
-              decoration: InputDecoration(labelText: 'Название'),
-              onSaved: (input) => _title = input!,
-              onChanged: (input) => _title = input,
-            ),
-            TextFormField(
-              controller: _dateController,
-              decoration: InputDecoration(labelText: 'Дата'),
-              onTap: _handleDatePicker,
-            ),
-            DropdownButtonFormField(
-              icon: Icon(Icons.arrow_drop_down_circle),
-              iconSize: 22,
-              items: _statusList.map((item) {
-                return DropdownMenuItem(
-                  value: item,
-                  child: Text(
-                    item,
-                    style: TextStyle(fontSize: 18),
-                  ),
-                );
-              }).toList(),
-              decoration: InputDecoration(labelText: 'Статус'),
-              validator: (input) => _status.isEmpty ? 'Выберите статус' : null,
-              onChanged: (newValue) {
-                setState(() => _status = newValue.toString());
-              },
-              value: _status,
-              onSaved: (newValue) {
-                setState(() => _status = newValue.toString());
-              },
-            )
-          ],
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 15),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _titleController,
+                validator: (input) =>
+                    input!.trim().isEmpty ? 'Введите название' : null,
+                decoration: InputDecoration(labelText: 'Название'),
+                onSaved: (input) => _title = input!,
+                onChanged: (input) => _title = input,
+              ),
+              TextFormField(
+                controller: _dateController,
+                decoration: InputDecoration(labelText: 'Дата'),
+                onTap: _handleDatePicker,
+              ),
+              DropdownButtonFormField(
+                icon: Icon(Icons.arrow_drop_down_circle),
+                iconSize: 22,
+                items: _statusList.map((item) {
+                  return DropdownMenuItem(
+                    value: item,
+                    child: Text(
+                      item,
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  );
+                }).toList(),
+                decoration: InputDecoration(labelText: 'Статус'),
+                validator: (input) =>
+                    _status.isEmpty ? 'Выберите статус' : null,
+                onChanged: (newValue) {
+                  setState(() => _status = newValue.toString());
+                },
+                value: _status,
+                onSaved: (newValue) {
+                  setState(() => _status = newValue.toString());
+                },
+              )
+            ],
+          ),
         ),
       ),
     );

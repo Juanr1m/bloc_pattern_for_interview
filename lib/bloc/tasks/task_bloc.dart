@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:agrobank_test/repositories/db.dart';
 import 'package:equatable/equatable.dart';
 
@@ -46,7 +47,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
     await _getNotes();
 
-    yield YourTasksState(tasks: _tasks);
+    yield AllTasksState(tasks: _tasks);
   }
 
   Stream<TaskState> _mapNoteAddEventToState(
@@ -55,7 +56,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       required String status}) async* {
     yield TasksLoading();
     await _addToNotes(title: title, date: date, status: status);
-    yield YourTasksState(tasks: _tasks);
+    yield AllTasksState(tasks: _tasks);
   }
 
   Stream<TaskState> _mapNoteEditEventToState(
@@ -66,7 +67,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     yield TasksLoading();
     await _updateNote(
         newTitle: title, newStatus: status, newDate: date, index: index);
-    yield YourTasksState(tasks: _tasks);
+    yield AllTasksState(tasks: _tasks);
   }
 
   Stream<TaskState> _mapNoteDeleteEventToState({required int index}) async* {
@@ -77,7 +78,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       var bDate = b.title;
       return aDate.compareTo(bDate);
     });
-    yield YourTasksState(tasks: _tasks);
+    yield AllTasksState(tasks: _tasks);
   }
 
   // Helper Functions
