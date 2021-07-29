@@ -105,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
       ),
-      appBar: buildAppBar(),
+      appBar: buildAppBar(context),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         backgroundColor: Theme.of(context).primaryColor,

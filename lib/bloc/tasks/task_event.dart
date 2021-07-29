@@ -37,3 +37,9 @@ class TaskDeleteEvent extends TaskEvent {
 
   TaskDeleteEvent({required this.index});
 }
+
+class TaskfilterEvent extends TaskEvent {
+  final bool isOrderToBig;
+
+  TaskfilterEvent({required this.isOrderToBig});
+}

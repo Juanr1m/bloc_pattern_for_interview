@@ -39,6 +39,10 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     if (event is TaskDeleteEvent) {
       yield* _mapTaskDeleteEventToState(index: event.index);
     }
+
+    if (event is TaskfilterEvent) {
+      yield* _mapTaskFilterEventToState(isOrderToBig: event.isOrderToBig);
+    }
   }
 
   // Stream Functions
@@ -78,6 +82,26 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       var bDate = b.title;
       return aDate.compareTo(bDate);
     });
+    yield AllTasksState(tasks: _tasks);
+  }
+
+  Stream<TaskState> _mapTaskFilterEventToState(
+      {required bool isOrderToBig}) async* {
+    yield TasksLoading();
+    await _getTasks();
+    if (isOrderToBig) {
+      _tasks.sort((a, b) {
+        var aDate = a.date;
+        var bDate = b.date;
+        return aDate.compareTo(bDate);
+      });
+    } else {
+      _tasks.sort((a, b) {
+        var aDate = a.date;
+        var bDate = b.date;
+        return bDate.compareTo(aDate);
+      });
+    }
     yield AllTasksState(tasks: _tasks);
   }
 
