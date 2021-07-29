@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:agrobank_test/repositories/models/task.dart';
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 import 'bottomnavigation_event.dart';

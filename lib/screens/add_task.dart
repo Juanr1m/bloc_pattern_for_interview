@@ -48,6 +48,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       floatingActionButton: Padding(
           padding: EdgeInsets.only(left: 10, bottom: 10),
           child: FloatingActionButton.extended(
+            backgroundColor: Theme.of(context).primaryColor,
             icon: Icon(Icons.add),
             label: Text('Добавить'),
             onPressed: () {

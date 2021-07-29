@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Bloc pattern demo for AgroBank',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: Color(0xFF1db954),
       ),
       home: HomeScreen(),
     );

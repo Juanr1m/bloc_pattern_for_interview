@@ -51,6 +51,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       floatingActionButton: Padding(
           padding: EdgeInsets.only(left: 10, bottom: 10),
           child: FloatingActionButton.extended(
+            backgroundColor: Theme.of(context).primaryColor,
             icon: Icon(Icons.add),
             label: Text('Изменить'),
             onPressed: () {

@@ -24,12 +24,12 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     }
 
     if (event is TaskAddEvent) {
-      yield* _mapNoteAddEventToState(
+      yield* _mapTaskAddEventToState(
           title: event.title, date: event.date, status: event.status);
     }
 
     if (event is TaskEditEvent) {
-      yield* _mapNoteEditEventToState(
+      yield* _mapTaskEditEventToState(
           title: event.title,
           date: event.date,
           status: event.status,
@@ -37,7 +37,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     }
 
     if (event is TaskDeleteEvent) {
-      yield* _mapNoteDeleteEventToState(index: event.index);
+      yield* _mapTaskDeleteEventToState(index: event.index);
     }
   }
 
@@ -45,34 +45,34 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   Stream<TaskState> _mapInitialEventToState() async* {
     yield TasksLoading();
 
-    await _getNotes();
+    await _getTasks();
 
     yield AllTasksState(tasks: _tasks);
   }
 
-  Stream<TaskState> _mapNoteAddEventToState(
+  Stream<TaskState> _mapTaskAddEventToState(
       {required String title,
       required DateTime date,
       required String status}) async* {
     yield TasksLoading();
-    await _addToNotes(title: title, date: date, status: status);
+    await _addToTasks(title: title, date: date, status: status);
     yield AllTasksState(tasks: _tasks);
   }
 
-  Stream<TaskState> _mapNoteEditEventToState(
+  Stream<TaskState> _mapTaskEditEventToState(
       {required String title,
       required DateTime date,
       required String status,
       required int? index}) async* {
     yield TasksLoading();
-    await _updateNote(
+    await _updateTask(
         newTitle: title, newStatus: status, newDate: date, index: index);
     yield AllTasksState(tasks: _tasks);
   }
 
-  Stream<TaskState> _mapNoteDeleteEventToState({required int index}) async* {
+  Stream<TaskState> _mapTaskDeleteEventToState({required int index}) async* {
     yield TasksLoading();
-    await _removeFromNotes(index: index);
+    await _removeFromTasks(index: index);
     _tasks.sort((a, b) {
       var aDate = a.title;
       var bDate = b.title;
@@ -82,33 +82,33 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   }
 
   // Helper Functions
-  Future<void> _getNotes() async {
+  Future<void> _getTasks() async {
     await _taskDatabase.getFullTasks().then((value) {
       _tasks = value;
     });
   }
 
-  Future<void> _addToNotes(
+  Future<void> _addToTasks(
       {required String title,
       required DateTime date,
       required String status}) async {
     await _taskDatabase
         .addToBox(Task(title: title, date: date, status: status));
-    await _getNotes();
+    await _getTasks();
   }
 
-  Future<void> _updateNote(
+  Future<void> _updateTask(
       {required int? index,
       required String newTitle,
       required DateTime newDate,
       required String newStatus}) async {
     await _taskDatabase.updateTask(
         index, Task(title: newTitle, date: newDate, status: newStatus));
-    await _getNotes();
+    await _getTasks();
   }
 
-  Future<void> _removeFromNotes({required int index}) async {
+  Future<void> _removeFromTasks({required int index}) async {
     await _taskDatabase.deleteFromBox(index);
-    await _getNotes();
+    await _getTasks();
   }
 }
